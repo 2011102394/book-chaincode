@@ -31,7 +31,8 @@ public class BookContract implements ContractInterface {
      * intent = SUBMIT 表示这是一个会修改账本状态的交易，需要节点共识
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Book createBook(Context ctx, String bookId, String bookName, String publisher, String currentLocation) {
+    public Book createBook(Context ctx, String bookId, String bookName, String publisher, String currentLocation,
+                           String operator, String operatorRole) {
         // 检查账本中是否已经存在该图书
         boolean exists = bookExists(ctx, bookId);
         if (exists) {
@@ -40,7 +41,8 @@ public class BookContract implements ContractInterface {
 
         // 创建图书对象，初始状态设为 "已出版"
         Book book = new Book(bookId, bookName, publisher, currentLocation, "已出版");
-
+        book.setOperator(operator);
+        book.setOperatorRole(operatorRole);
         // 将图书对象转换为 JSON 字符串
         String bookJson = genson.serialize(book);
 
@@ -57,7 +59,8 @@ public class BookContract implements ContractInterface {
      * 2. 更新图书位置 (流转记录)
      */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Book updateBookLocation(Context ctx, String bookId, String newLocation, String newStatus) {
+    public Book updateBookLocation(Context ctx, String bookId, String newLocation, String newStatus,
+                                   String operator, String operatorRole) {
         // 先从账本查出当前图书
         String bookJson = ctx.getStub().getStringState(bookId);
         if (bookJson == null || bookJson.isEmpty()) {
@@ -68,7 +71,8 @@ public class BookContract implements ContractInterface {
         Book book = genson.deserialize(bookJson, Book.class);
         book.setCurrentLocation(newLocation);
         book.setStatus(newStatus);
-
+        book.setOperator(operator);
+        book.setOperatorRole(operatorRole);
         // 重新存入账本 (覆盖旧的 Value，但 Fabric 会自动记录历史版本)
         ctx.getStub().putStringState(bookId, genson.serialize(book));
         // 抛出图书流转事件

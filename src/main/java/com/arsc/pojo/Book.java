@@ -22,7 +22,13 @@ public class Book {
     @Property()
     private String status;            // 状态 (如：已出版、运输中、已入库、已售出)
 
-    // 构造函数
+    @Property()
+    private String operator;      // 🌟 新增：操作人 (如：张三)
+
+    @Property()
+    private String operatorRole; // 操作人角色 (如：出库扫码员)
+
+
     public Book(@JsonProperty("bookId") String bookId,
                 @JsonProperty("bookName") String bookName,
                 @JsonProperty("publisher") String publisher,
@@ -61,5 +67,21 @@ public class Book {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOperator() {
+        return operator;
+    }
+
+    public void setOperator(String operator) {
+        this.operator = operator;
+    }
+
+    public String getOperatorRole() {
+        return operatorRole;
+    }
+
+    public void setOperatorRole(String operatorRole) {
+        this.operatorRole = operatorRole;
     }
 }
